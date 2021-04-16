@@ -27,7 +27,7 @@ function [predicted_dg] = make_predictions(test_ecog)
         Y_hat = R_test * f_matrix{s};
         splined = zeros(total_size, 5);
         for j = 1:5
-            splined(:,j) = spline([time.'], [Y_hat(:,j).'], 1:total_size);
+            splined(:,j) = spline([0 time.'], [0 Y_hat(:,j).'], 1:total_size);
         end
         predicted_dg{s} = splined;
     end

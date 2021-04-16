@@ -15,7 +15,7 @@ samples_s1 = length(s1_ecog_data(:,1));
 samples_s2 = length(s2_ecog_data(:,1));
 samples_s3 = length(s3_ecog_data(:,1));
 
-train_split = 1;
+train_split = 0.8;
 
 % Split data into a train and test set (use at least 50% for training)
 s1_ecog_data_train = s1_ecog_data(1:samples_s1*train_split, :);
@@ -39,26 +39,15 @@ train_dg_data = {s1_dg_data_train, s2_dg_data_train, s3_dg_data_train};
 test_ecog_data = {s1_ecog_data_test, s2_ecog_data_test, s3_ecog_data_test};
 test_dg_data = {s1_dg_data_test, s2_dg_data_test, s3_dg_data_test};
 
+%%
 f_matrix = train_model(train_ecog_data, train_dg_data);
 save('f_matrix.mat', 'f_matrix');
 
 %%
 predictions = make_predictions(test_ecog_data);
+
+%%
 correlations = zeros(3,1,5);
-
-% winLen = 0.1;
-% winOverlap = 0.05;
-% sample_rate_dg = 1000;
-% winLenS = sample_rate_dg * winLen;
-% winOverlapS = sample_rate_dg * winOverlap;
-
-% Y_actual = zeros(3,height(predictions{1}), 5);
-% for s = 1:3
-%     height(predictions{s})
-%     for i = 1:height(predictions{s})
-%         Y_actual(s, i, :) = test_dg_data{s}((i-1) * winOverlapS + winLenS, :);
-%     end
-% end
 
 pltno = 1;
 figure();
@@ -67,21 +56,25 @@ plot(predictions{pltno}(:,1));
 hold on
 plot(test_dg_data{pltno}(:,1));
 hold off
+legend("predicted", "Actual");
 subplot(2,2,2);
 plot(predictions{pltno}(:,2));
 hold on
 plot(test_dg_data{pltno}(:,2));
 hold off
+legend("predicted", "Actual");
 subplot(2,2,3);
 plot(predictions{pltno}(:,3));
 hold on
 plot(test_dg_data{pltno}(:,3));
 hold off
+legend("predicted", "Actual");
 subplot(2,2,4);
 plot(predictions{pltno}(:,5));
 hold on
 plot(test_dg_data{pltno}(:,5));
 hold off
+legend("predicted", "Actual");
 
 for s = 1:3
     for i = 1:5
