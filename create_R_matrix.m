@@ -10,8 +10,8 @@ function [R]=create_R_matrix(features, N_wind)
     % Output:   R:          (samples x (N_wind*channels*features))
     % 
     
-    M = height(features);
-    W = width(features);
+    M = size(features, 1);
+    W = size(features, 2);
     % each row has N * channels * num_features + a column of ones
     % there are M rows
     % total size is M x (N*channels*num_features)

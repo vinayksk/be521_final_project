@@ -21,13 +21,13 @@ function [predicted_dg] = make_predictions(test_ecog)
     f_matrix_struct = load('f_matrix.mat');
     f_matrix = f_matrix_struct.f_matrix;
     for s = 1:3
-        total_size = height(test_ecog{s});
+        total_size = size(test_ecog{s},1);
         [windowed_test, time] = getWindowedFeats(test_ecog{s}, sample_rate_ecog, winLen, winOverlap);
         R_test = create_R_matrix(windowed_test, N);
         Y_hat = R_test * f_matrix{s};
         splined = zeros(total_size, 5);
         for j = 1:5
-            splined(:,j) = spline([0 time.'], [0 Y_hat(:,j).'], 1:total_size);
+            splined(:,j) = spline([time.'], [Y_hat(:,j).'], 1:total_size);
         end
         predicted_dg{s} = splined;
     end

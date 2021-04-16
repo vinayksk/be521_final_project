@@ -15,7 +15,7 @@ samples_s1 = length(s1_ecog_data(:,1));
 samples_s2 = length(s2_ecog_data(:,1));
 samples_s3 = length(s3_ecog_data(:,1));
 
-train_split = 0.8;
+train_split = 0.9;
 
 % Split data into a train and test set (use at least 50% for training)
 s1_ecog_data_train = s1_ecog_data(1:samples_s1*train_split, :);
@@ -48,29 +48,34 @@ predictions = make_predictions(test_ecog_data);
 
 %%
 correlations = zeros(3,1,5);
+[b,a] = ellip(9,3.5,210,0.04,'low');
+filtered = cell(3,1);
+for i = 1:3
+    filtered{i} = filtfilt(b,a,predictions{i});
+end
 
 pltno = 1;
 figure();
 subplot(2,2,1);
-plot(predictions{pltno}(:,1));
+plot(filtered{pltno}(:,1));
 hold on
 plot(test_dg_data{pltno}(:,1));
 hold off
 legend("predicted", "Actual");
 subplot(2,2,2);
-plot(predictions{pltno}(:,2));
+plot(filtered{pltno}(:,2));
 hold on
 plot(test_dg_data{pltno}(:,2));
 hold off
 legend("predicted", "Actual");
 subplot(2,2,3);
-plot(predictions{pltno}(:,3));
+plot(filtered{pltno}(:,3));
 hold on
 plot(test_dg_data{pltno}(:,3));
 hold off
 legend("predicted", "Actual");
 subplot(2,2,4);
-plot(predictions{pltno}(:,5));
+plot(filtered{pltno}(:,5));
 hold on
 plot(test_dg_data{pltno}(:,5));
 hold off
@@ -78,7 +83,7 @@ legend("predicted", "Actual");
 
 for s = 1:3
     for i = 1:5
-        correlations(s,1,i) = corr(predictions{s}(:,i), test_dg_data{s}(:,i));
+        correlations(s,1,i) = corr(filtered{s}(:,i), test_dg_data{s}(:,i));
     end
 end
 
@@ -96,4 +101,9 @@ clearvars s3*
 %%
 load('leaderboard_data.mat');
 predicted_dg = make_predictions(leaderboard_ecog);
+
+for i = 1:3
+    predicted_dg{i} = filtfilt(b,a,predicted_dg{i});
+end
+
 save('predict_dg.mat', 'predicted_dg');

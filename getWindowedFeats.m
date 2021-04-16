@@ -30,8 +30,8 @@ num_Feats = 8;
 
 filtered = filter_data(raw_data);
 
-num_samples = height(raw_data);
-num_channels = width(raw_data);
+num_samples = size(raw_data, 1);
+num_channels = size(raw_data, 2);
 windowLen = window_length * fs;
 windowOverlap = window_overlap * fs;
 
