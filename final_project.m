@@ -15,7 +15,7 @@ samples_s1 = length(s1_ecog_data(:,1));
 samples_s2 = length(s2_ecog_data(:,1));
 samples_s3 = length(s3_ecog_data(:,1));
 
-train_split = 0.9;
+train_split = 1;
 
 % Split data into a train and test set (use at least 50% for training)
 s1_ecog_data_train = s1_ecog_data(1:samples_s1*train_split, :);
@@ -47,14 +47,28 @@ save('f_matrix.mat', 'f_matrix');
 predictions = make_predictions(test_ecog_data);
 
 %%
-correlations = zeros(3,1,5);
-[b,a] = ellip(9,3.5,210,0.04,'low');
+correlations = zeros(3,5);
+%%(1,1), (1,2), (3,1), (3,5)
+%[b,a] = ellip(9,20,210,0.04,'low');
+[b,a] = ellip(9,25,120,0.1,'low');
 filtered = cell(3,1);
 for i = 1:3
     filtered{i} = filtfilt(b,a,predictions{i});
 end
+filtered{1}(:, 5) = filtered{1}(:, 5)*-1;
+% for s = 1:3
+%     temp_filt = predictions{s};
+%     for f = 1:5
+%         if s == 1 && f <= 2
+%             [b,a] = ellip(9,20,210,0.04,'low');
+%             temp_filt(:, f)= filtfilt(b,a,temp_filt(:, f));
+%         end
+%           
+%         filtered{s} = temp_filt;
+%     end
+% end
 
-pltno = 1;
+for pltno = 2
 figure();
 subplot(2,2,1);
 plot(filtered{pltno}(:,1));
@@ -80,15 +94,17 @@ hold on
 plot(test_dg_data{pltno}(:,5));
 hold off
 legend("predicted", "Actual");
+end
 
 for s = 1:3
     for i = 1:5
-        correlations(s,1,i) = corr(filtered{s}(:,i), test_dg_data{s}(:,i));
+        correlations(s,i) = corr(filtered{s}(:,i), test_dg_data{s}(:,i));
     end
 end
 
+correlations
 means = mean(correlations);
-mean(means(:,:,[1,2,3,5]))
+mean(means(1,[1,2,3,5]))
 
 vars = {'samples_s1', 'samples_s3', 'samples_s2', 'vars'};
 vars2 = {'train_dg', 'train_ecog', 'train_split', 'vars1'};
@@ -102,8 +118,10 @@ clearvars s3*
 load('leaderboard_data.mat');
 predicted_dg = make_predictions(leaderboard_ecog);
 
-for i = 1:3
-    predicted_dg{i} = filtfilt(b,a,predicted_dg{i});
-end
+[b,a] = ellip(9,25,120,0.1,'low');
+predicted_dg{1} = filtfilt(b,a,predicted_dg{1});
+predicted_dg{2} = filtfilt(b,a,predicted_dg{2});
+% [b,a] = ellip(9,20,210,0.04,'low');
+predicted_dg{3} = filtfilt(b,a,predicted_dg{3});
 
 save('predict_dg.mat', 'predicted_dg');
