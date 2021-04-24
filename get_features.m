@@ -18,7 +18,6 @@ function [features, power] = get_features(clean_data,fs)
     % Output:   features:   (1 x (channels*features))
     % 
 %% Your code here (8 points)
-
 spectral_8_12 = bandpower(clean_data,fs,[8 12]);
 spectral_18_24 = bandpower(clean_data,fs,[18 24]);
 spectral_75_115 = bandpower(clean_data,fs,[75 115]);

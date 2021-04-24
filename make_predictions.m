@@ -1,4 +1,4 @@
-function [predicted_dg] = make_predictions(test_ecog)
+function [predicted_dg, data] = make_predictions(test_ecog)
 
 % INPUTS: test_ecog - 3 x 1 cell array containing ECoG for each subject, where test_ecog{i} 
 % to the ECoG for subject i. Each cell element contains a N x M testing ECoG,
@@ -14,9 +14,8 @@ function [predicted_dg] = make_predictions(test_ecog)
     winLen = 0.1;
     winOverlap = 0.05;
     sample_rate_ecog = 1000;
-    N = 3;
-    
-    
+    N = 2;
+    data = cell(3,1);
     predicted_dg = cell(3,1);
     f_matrix_struct = load('f_matrix.mat');
     f_matrix = f_matrix_struct.f_matrix;
@@ -27,10 +26,12 @@ function [predicted_dg] = make_predictions(test_ecog)
         Y_hat = R_test * f_matrix{s};
         splined = zeros(total_size, 5);
         for j = 1:5
-            splined(:,j) = spline([0 time.'], [0 Y_hat(:,j).'], 1:total_size);
+            splined(:,j) = spline([0, time.'], [0, Y_hat(:,j).'], 1:total_size);
         end
         predicted_dg{s} = splined;
+        data{s} = {time.', Y_hat};
     end
+    
 
 end
 

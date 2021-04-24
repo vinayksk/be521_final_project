@@ -14,10 +14,10 @@ function [f_matrix] = train_model(train_ecog, train_dg)
     sample_rate_dg = 1000;
     sample_rate_ecog = 1000;
     f_matrix = cell(3,1);
+    N = 2;
     for s = 1:3
         windowed = getWindowedFeats(train_ecog{s}, sample_rate_ecog, winLen, winOverlap);
 
-        N = 3;
         R = create_R_matrix(windowed, N);
 
         vars = {'testR_features', 'N_wind', 'vars'};
@@ -37,6 +37,7 @@ function [f_matrix] = train_model(train_ecog, train_dg)
         f_matrix{s} = mldivide(RtR,RtY);
 
     end
+    
 
 
 end

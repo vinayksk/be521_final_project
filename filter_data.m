@@ -24,5 +24,4 @@ function clean_data = filter_data(raw_eeg)
     
     clean_data = bandpass(raw_eeg, [2,200], 1000);
     
-    
 end
